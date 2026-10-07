@@ -199,6 +199,10 @@ form>.field{flex:0 0 auto}
 .field--wide{flex:2 1 220px}
 .field--narrow{flex:1 1 120px}
 label{font-size:0.875rem;font-weight:700}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+form .btn[disabled]{opacity:.6;cursor:progress}
+#form-status.ok{color:#1B6B3A}
+#form-status.err{color:#A3261D}
 label .opt{font-weight:500;color:var(--muted)}
 input,select,textarea{font:inherit;width:100%;padding:12px;border:1px solid #8A7FAE;border-radius:6px;background:var(--white);color:var(--ink);min-height:48px}
 textarea{resize:vertical;min-height:96px}
@@ -454,6 +458,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 3
         <label for="f-notes">Tell us about your project or question</label>
         <textarea id="f-notes" name="notes" rows="4"></textarea>
       </div>
+      <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
       <button class="btn btn--purple" type="submit">Send message</button>
       <p id="form-status" role="status" aria-live="polite"></p>
     </form>
@@ -471,42 +476,65 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 3
 
 <script>
 /* ============================================================
-   CONTACT FORM: inquiries open the visitor's email app addressed
-   to the inbox below. Change the address here to redirect them.
+   CONTACT FORM: submissions go through Web3Forms and arrive in
+   the inbox linked to this access key. The key is public by design.
    ============================================================ */
+var FORM_ENDPOINT = "https://api.web3forms.com/submit";
+var FORM_ACCESS_KEY = "5d548a0e-5834-4bbb-8969-cdc7c3088876";
 var CONTACT_EMAIL = "babak.shafei@aquanrgconsulting.com";
 
 document.getElementById('yr').textContent = new Date().getFullYear();
 
 document.getElementById('contact-form').addEventListener('submit', function (e) {
   e.preventDefault();
-  var f = e.target, status = document.getElementById('form-status');
+  var f = e.target, status = document.getElementById('form-status'), btn = f.querySelector('button[type="submit"]');
   var v = function (n) { return (f.elements[n].value || '').trim(); };
+  var say = function (text, cls) { status.className = cls || ''; status.textContent = text; };
   var need = [['name', 'Add your name'], ['email', 'Add your work email'], ['topic', 'Choose a topic']];
   for (var i = 0; i < need.length; i++) {
     if (!v(need[i][0])) {
-      status.textContent = need[i][1] + ' so we can reply.';
+      say(need[i][1] + ' so we can reply.', 'err');
       f.elements[need[i][0]].focus();
       return;
     }
   }
-  if (CONTACT_EMAIL.indexOf('@') === -1) {
-    status.textContent = 'This form is not connected to an inbox yet.';
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v('email'))) {
+    say('Check the email address, for example name@company.com.', 'err');
+    f.elements.email.focus();
     return;
   }
-  var subject = 'GigaPermit inquiry: ' + v('topic');
-  var body = [
-    'Name: ' + v('name'),
-    'Company: ' + (v('company') || 'not given'),
-    'Email: ' + v('email'),
-    'Phone: ' + (v('phone') || 'not given'),
-    'Topic: ' + v('topic'),
-    '',
-    v('notes')
-  ].join('\n');
-  window.location.href = 'mailto:' + CONTACT_EMAIL +
-    '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-  status.textContent = 'Your email app should open with the message ready to send.';
+  var payload = {
+    access_key: FORM_ACCESS_KEY,
+    subject: 'GigaPermit inquiry: ' + v('topic'),
+    from_name: 'GigaPermit website',
+    replyto: v('email'),
+    name: v('name'),
+    company: v('company') || 'not given',
+    email: v('email'),
+    phone: v('phone') || 'not given',
+    topic: v('topic'),
+    message: v('notes') || 'no message',
+    botcheck: f.elements.botcheck.checked
+  };
+  btn.disabled = true;
+  say('Sending your message…');
+  fetch(FORM_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify(payload)
+  }).then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+    .then(function (res) {
+      if (res.ok && res.d && res.d.success) {
+        f.reset();
+        say('Message sent. We will reply to the email you gave us.', 'ok');
+      } else {
+        say('Message not sent. Email us at ' + CONTACT_EMAIL + ' instead.', 'err');
+      }
+    })
+    .catch(function () {
+      say('Message not sent; the connection failed. Try again, or email ' + CONTACT_EMAIL + '.', 'err');
+    })
+    .then(function () { btn.disabled = false; });
 });
 </script>
 </body>
