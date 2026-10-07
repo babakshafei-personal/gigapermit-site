@@ -195,9 +195,11 @@ tbody tr+tr{border-top:1px solid var(--line)}
 form{flex:1 1 440px;min-width:0;background:var(--white);color:var(--ink);border-radius:10px;padding:32px;display:flex;flex-direction:column;gap:18px}
 .row{display:flex;flex-wrap:wrap;gap:18px}
 .field{flex:1 1 200px;min-width:0;display:flex;flex-direction:column;gap:6px}
+form>.field{flex:0 0 auto}
 .field--wide{flex:2 1 220px}
 .field--narrow{flex:1 1 120px}
 label{font-size:0.875rem;font-weight:700}
+label .opt{font-weight:500;color:var(--muted)}
 input,select,textarea{font:inherit;width:100%;padding:12px;border:1px solid #8A7FAE;border-radius:6px;background:var(--white);color:var(--ink);min-height:48px}
 textarea{resize:vertical;min-height:96px}
 form .btn{align-self:flex-start}
@@ -221,7 +223,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 3
       <a href="#matrix">Permitting matrix</a>
       <a href="#process">Process</a>
       <a href="#why">Why AquaNRG</a>
-      <a class="btn btn--amber" href="#contact">Screen a site</a>
+      <a class="btn btn--amber" href="#contact">Contact us</a>
     </nav>
   </div>
 </header>
@@ -235,7 +237,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 3
       <h1>The permit decides whether you build, and how fast.</h1>
       <p class="hero__sub">GigaPermit™ runs environmental permitting for behind-the-meter generation serving hyperscale data centers. Gas turbine and reciprocating engine facilities, from the first site screen to construction start, at development speed.</p>
       <div class="hero__cta">
-        <a class="btn btn--amber" href="#contact">Request a fatal-flaw screen</a>
+        <a class="btn btn--amber" href="#contact">Talk to our permitting team</a>
         <a class="btn btn--ghost" href="#matrix">See a sample permitting matrix</a>
       </div>
     </div>
@@ -397,8 +399,8 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 3
 <section id="contact" class="band band--dark">
   <div class="wrap contact">
     <div>
-      <h2>Send us a site. Get a permitting read before you commit.</h2>
-      <p class="lede">Tell us where, how many megawatts, and what equipment. We reply with what a fatal-flaw screen would cover and when you would have it.</p>
+      <h2>Talk to our permitting team.</h2>
+      <p class="lede">Tell us which permit or question you need help with. We reply by email or phone, whichever you prefer.</p>
       <address>
         <b>GigaPermit™ by AquaNRG</b><br>
         24 Greenway Plaza, Suite 1800<br>
@@ -407,30 +409,52 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 3
       </address>
     </div>
 
-    <form id="screen-form" novalidate>
+    <form id="contact-form" novalidate>
       <div class="row">
         <div class="field"><label for="f-name">Name</label><input id="f-name" name="name" type="text" autocomplete="name" required></div>
-        <div class="field"><label for="f-email">Work email</label><input id="f-email" name="email" type="email" autocomplete="email" required></div>
+        <div class="field"><label for="f-company">Company</label><input id="f-company" name="company" type="text" autocomplete="organization"></div>
       </div>
       <div class="row">
-        <div class="field field--wide"><label for="f-site">Site county and state</label><input id="f-site" name="site" type="text"></div>
-        <div class="field field--narrow"><label for="f-mw">Capacity (MW)</label><input id="f-mw" name="mw" type="number" min="0" inputmode="numeric"></div>
+        <div class="field"><label for="f-email">Work email</label><input id="f-email" name="email" type="email" autocomplete="email" required></div>
+        <div class="field"><label for="f-phone">Phone number <span class="opt">(optional)</span></label><input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel"></div>
       </div>
       <div class="field">
-        <label for="f-tech">Generation type</label>
-        <select id="f-tech" name="tech">
-          <option>Gas turbines</option>
-          <option>Reciprocating engines</option>
-          <option>Fuel cells</option>
-          <option>Hybrid with storage or renewables</option>
-          <option>Not decided yet</option>
+        <label for="f-topic">What do you need help with?</label>
+        <select id="f-topic" name="topic" required>
+          <option value="" selected disabled>Choose a topic</option>
+          <optgroup label="Air">
+            <option>Air permitting (PSD, NSR, minor source, standard permits)</option>
+            <option>Title V operating permits</option>
+            <option>BACT or LAER and control technology</option>
+            <option>Air dispersion modeling</option>
+            <option>Greenhouse gas, NSPS and NESHAP applicability</option>
+          </optgroup>
+          <optgroup label="Water">
+            <option>Clean Water Act Section 404 and 401 (wetlands and streams)</option>
+            <option>Wastewater discharge and stormwater (NPDES)</option>
+            <option>Water rights and supply</option>
+          </optgroup>
+          <optgroup label="Natural and cultural resources">
+            <option>Endangered species (ESA consultation)</option>
+            <option>Cultural resources (NHPA Section 106)</option>
+            <option>NEPA review</option>
+          </optgroup>
+          <optgroup label="Project strategy">
+            <option>Fatal-flaw site screening</option>
+            <option>Permit sequencing and construction start</option>
+            <option>Agency engagement and negotiation</option>
+            <option>Public comment and contested cases</option>
+            <option>Local zoning and land-use approvals</option>
+            <option>Compliance after the permit is issued</option>
+          </optgroup>
+          <option>Several of these, or not sure yet</option>
         </select>
       </div>
       <div class="field">
-        <label for="f-notes">Target construction start and anything else we should know</label>
-        <textarea id="f-notes" name="notes" rows="3"></textarea>
+        <label for="f-notes">Tell us about your project or question</label>
+        <textarea id="f-notes" name="notes" rows="4"></textarea>
       </div>
-      <button class="btn btn--purple" type="submit">Request a fatal-flaw screen</button>
+      <button class="btn btn--purple" type="submit">Send message</button>
       <p id="form-status" role="status" aria-live="polite"></p>
     </form>
   </div>
@@ -454,32 +478,35 @@ var CONTACT_EMAIL = "babak.shafei@aquanrgconsulting.com";
 
 document.getElementById('yr').textContent = new Date().getFullYear();
 
-document.getElementById('screen-form').addEventListener('submit', function (e) {
+document.getElementById('contact-form').addEventListener('submit', function (e) {
   e.preventDefault();
   var f = e.target, status = document.getElementById('form-status');
   var v = function (n) { return (f.elements[n].value || '').trim(); };
-  if (!v('name') || !v('email')) {
-    status.textContent = 'Add your name and work email so we can reply.';
-    (v('name') ? f.elements.email : f.elements.name).focus();
-    return;
+  var need = [['name', 'Add your name'], ['email', 'Add your work email'], ['topic', 'Choose a topic']];
+  for (var i = 0; i < need.length; i++) {
+    if (!v(need[i][0])) {
+      status.textContent = need[i][1] + ' so we can reply.';
+      f.elements[need[i][0]].focus();
+      return;
+    }
   }
   if (CONTACT_EMAIL.indexOf('@') === -1) {
     status.textContent = 'This form is not connected to an inbox yet.';
     return;
   }
-  var subject = 'Fatal-flaw screen request: ' + (v('site') || 'site to be confirmed');
+  var subject = 'GigaPermit inquiry: ' + v('topic');
   var body = [
     'Name: ' + v('name'),
+    'Company: ' + (v('company') || 'not given'),
     'Email: ' + v('email'),
-    'Site: ' + (v('site') || 'not given'),
-    'Capacity (MW): ' + (v('mw') || 'not given'),
-    'Generation type: ' + v('tech'),
+    'Phone: ' + (v('phone') || 'not given'),
+    'Topic: ' + v('topic'),
     '',
     v('notes')
   ].join('\n');
   window.location.href = 'mailto:' + CONTACT_EMAIL +
     '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-  status.textContent = 'Your email app should open with the request ready to send.';
+  status.textContent = 'Your email app should open with the message ready to send.';
 });
 </script>
 </body>
